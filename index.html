@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="REN:Lifestyle - ライフスタイル・まとめ・世界情勢をお届けするメディア">
+<title>REN:Lifestyle</title>
+<style>
+/* ===========================
+   BASE & RESET
+=========================== */
+:root {
+  --accent: #c9a84c;
+  --accent-dark: #a07830;
+  --white: #ffffff;
+  --dark: #111111;
+  --dark2: #1a1a1a;
+  --gray: #888;
+  --card-bg: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.12);
+  --nav-bg: rgba(10,10,10,0.95);
+  --nav-height: 60px;
+  --font: 'Hiragino Sans', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--font);
+  background: var(--dark);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+
+img { max-width: 100%; display: block; }
+
+/* ===========================
+   SCROLLBAR
+=========================== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--dark); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+/* ===========================
+   NAVBAR
+=========================== */
+#navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-height);
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(201,168,76,0.2);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.nav-logo {
+  font-size: clamp(18px, 4vw, 24px);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  cursor: pointer;
+  user-select: none;
+}
+
+.nav-logo span { color: var(--accent); }
+
+/* ハンバーガーボタン（常時表示） */
+#menu-btn {
+  width: 44px; height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background var(--transition);
+  z-index: 1100;
+}
+
+#menu-btn:hover { background: rgba(255,255,255,0.08); }
+
+.bar {
+  width: 24px; height: 2px;
+  background: var(--white);
+  border-radius: 2px;
+  transition: var(--transition);
+  transform-origin: center;
+}
+
+/* × になるアニメーション */
+#menu-btn.open .bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+#menu-btn.open .bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+#menu-btn.open .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ===========================
+   DRAWER MENU
+=========================== */
+#drawer {
+  position: fixed;
+  top: 0; right: -320px;
+  width: 280px; max-width: 85vw;
+  height: 100vh;
+  background: rgba(10,10,10,0.98);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(201,168,76,0.2);
+  z-index: 999;
+  transition: right var(--transition);
+  display: flex;
+  flex-direction: column;
+  padding: 80px 0 40px;
+}
+
+#drawer.open { right: 0; }
+
+#drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition);
+}
+
+#drawer-overlay.show { opacity: 1; pointer-events: all; }
+
+.drawer-nav { flex: 1; }
+
+.drawer-nav a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 28px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.75);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.drawer-nav a:hover,
+.drawer-nav a.active {
+  color: var(--accent);
+  background: rgba(201,168,76,0.08);
+  padding-left: 36px;
+}
+
+.drawer-nav a .nav-icon { font-size: 18px; flex-shrink: 0; }
+
+.drawer-footer {
+  padding: 20px 28px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.08em;
+}
+
+/* ===========================
+   PAGES
+=========================== */
+.page {
+  display: none;
+  min-height: 100vh;
+  padding-top: var(--nav-height);
+}
+
+.page.active { display: block; }
+
+/* ===========================
+   HERO (背景画像ヘッダー)
+=========================== */
+.page-hero {
+  position: relative;
+  height: clamp(280px, 50vw, 460px);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.page-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.45);
+  transition: transform 6s ease;
+}
+
+.page-hero:hover .page-hero-bg { transform: scale(1.03); }
+
+.page-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+}
+
+.page-hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 30px 24px 32px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.page-hero-label {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--dark);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  padding: 3px 12px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.page-hero-title {
+  font-size: clamp(28px, 6vw, 52px);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+
+.page-hero-sub {
+  font-size: clamp(12px, 2.5vw, 15px);
+  color: rgba(255,255,255,0.65);
+  margin-top: 8px;
+}
+
+/* ===========================
+   HOME PAGE
+=========================== */
+#page-home .home-welcome {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 20px;
+}
+
+.home-welcome h2 {
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.home-welcome h2 span { color: var(--accent); }
+
+.home-welcome p {
+  font-size: clamp(13px, 2.5vw, 15px);
+  color: rgba(255,255,255,0.65);
+  line-height: 1.8;
+  margin-bottom: 32px;
+}
+
+.home-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.home-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 20px 16px;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+
+.home-card:hover {
+  border-color: var(--accent);
+  background: rgba(201,168,76,0.08);
+  transform: translateY(-4px);
+}
+
+.home-card-icon { font-size: 32px; margin-bottom: 10px; }
+.home-card-name { font-size: 14px; font-weight: 700; color: var(--white); }
+.home-card-desc { font-size: 11px; color: var(--gray); margin-top: 4px; }
+
+/* 最新記事一覧 */
+.latest-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(16px, 3vw, 20px);
+  font-weight: 900;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(201,168,76,0.25);
+}
+
+.section-heading::before {
+  content: '';
+  display: block;
+  width: 4px; height: 20px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ===========================
+   ARTICLE LIST
+=========================== */
+.articles-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px 60px;
+}
+
+.article-list { display: flex; flex-direction: column; gap: 16px; }
+
+.article-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.article-card:hover {
+  border-color: var(--accent);
+  background: rgba(201,168,76,0.06);
+  transform: translateX(4px);
+}
+
+.article-card-num {
+  font-size: 28px;
+  font-weight: 900;
+  color: rgba(201,168,76,0.25);
+  line-height: 1;
+  flex-shrink: 0;
+  min-width: 36px;
+}
+
+.article-card-body { flex: 1; }
+
+.article-card-category {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.cat-matome  { background: rgba(96,165,250,0.15); color: #60a5fa; }
+.cat-article { background: rgba(74,222,128,0.15);  color: #4ade80; }
+.cat-world   { background: rgba(251,146,60,0.15);  color: #fb923c; }
+.cat-other   { background: rgba(167,139,250,0.15); color: #a78bfa; }
+
+.article-card-title {
+  font-size: clamp(14px, 2.5vw, 17px);
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 6px;
+  color: var(--white);
+  transition: color var(--transition);
+}
+
+.article-card:hover .article-card-title { color: var(--accent); }
+
+.article-card-summary {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.article-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+}
+
+.article-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.article-tag {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.06);
+  padding: 1px 7px;
+  border-radius: 4px;
+}
+
+/* ===========================
+   ARTICLE DETAIL (modal)
+=========================== */
+#article-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
+  overflow-y: auto;
+  padding: 20px 16px;
+}
+
+#article-modal.open { display: flex; }
+
+.modal-box {
+  background: #161616;
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 720px;
+  margin: auto;
+  position: relative;
+  overflow: hidden;
+  animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn {
+  from { opacity:0; transform: translateY(30px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+.modal-header {
+  padding: 28px 28px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: var(--white);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--transition);
+}
+
+.modal-close:hover { background: rgba(255,255,255,0.15); }
+
+.modal-category { margin-bottom: 8px; }
+
+.modal-title {
+  font-size: clamp(18px, 4vw, 26px);
+  font-weight: 900;
+  line-height: 1.35;
+  margin-bottom: 10px;
+}
+
+.modal-meta {
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+  display: flex; gap: 14px; flex-wrap: wrap;
+}
+
+.modal-body {
+  padding: 28px;
+  font-size: clamp(14px, 2.5vw, 16px);
+  line-height: 1.85;
+  color: rgba(255,255,255,0.85);
+}
+
+.modal-body h2 {
+  font-size: clamp(16px, 3vw, 20px);
+  font-weight: 700;
+  color: var(--accent);
+  margin: 24px 0 12px;
+  padding-left: 12px;
+  border-left: 3px solid var(--accent);
+}
+
+.modal-body h3 {
+  font-size: clamp(14px, 2.5vw, 17px);
+  font-weight: 700;
+  margin: 18px 0 8px;
+}
+
+.modal-body p { margin-bottom: 14px; }
+
+.modal-body ul, .modal-body ol {
+  padding-left: 22px;
+  margin-bottom: 14px;
+}
+
+.modal-body li { margin-bottom: 6px; line-height: 1.7; }
+
+.modal-body strong { color: var(--accent); }
+
+.modal-tags {
+  padding: 16px 28px 28px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ===========================
+   EMPTY STATE
+=========================== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255,255,255,0.3);
+}
+.empty-state .empty-icon { font-size: 48px; margin-bottom: 14px; }
+.empty-state p { font-size: 14px; }
+
+/* ===========================
+   ADMIN PANEL
+=========================== */
+#admin-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.85);
+  padding: 20px;
+}
+
+#admin-modal.open { display: flex; }
+
+.admin-box {
+  background: #141414;
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px;
+}
+
+.admin-box h2 {
+  font-size: 18px;
+  font-weight: 900;
+  margin-bottom: 20px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-group { margin-bottom: 16px; }
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: var(--white);
+  font-family: var(--font);
+  font-size: 14px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--accent);
+}
+
+.form-group textarea { min-height: 160px; resize: vertical; }
+
+.form-group select option { background: #1a1a1a; }
+
+.admin-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition);
+  font-family: var(--font);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--dark);
+}
+
+.btn-primary:hover { background: #e0b85a; transform: translateY(-1px); }
+
+.btn-secondary {
+  background: rgba(255,255,255,0.08);
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.btn-secondary:hover { background: rgba(255,255,255,0.14); }
+
+.btn-danger {
+  background: rgba(239,68,68,0.15);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,0.25);
+}
+
+.btn-danger:hover { background: rgba(239,68,68,0.25); }
+
+.admin-note {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  margin-top: 12px;
+  line-height: 1.6;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+/* ===========================
+   TOAST
+=========================== */
+#toast {
+  position: fixed;
+  bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: rgba(201,168,76,0.95);
+  color: var(--dark);
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 700;
+  z-index: 9999;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+#toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ===========================
+   FOOTER
+=========================== */
+footer {
+  background: #0a0a0a;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 30px 20px;
+  text-align: center;
+}
+
+footer .footer-logo {
+  font-size: 20px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+footer .footer-logo span { color: var(--accent); }
+
+footer p {
+  font-size: 11px;
+  color: rgba(255,255,255,0.2);
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+@media (max-width: 600px) {
+  .article-card { flex-direction: column; gap: 8px; }
+  .article-card-num { font-size: 20px; }
+  .home-cards { grid-template-columns: repeat(2, 1fr); }
+  .modal-header, .modal-body, .modal-tags { padding: 20px; }
+}
+
+@media (max-width: 360px) {
+  .home-cards { grid-template-columns: 1fr; }
+}
+
+/* ===========================
+   LOADING
+=========================== */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px;
+  color: var(--gray);
+  font-size: 14px;
+}
+
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="navigateTo('home')">REN<span>:</span>Lifestyle</div>
+  <button id="menu-btn" aria-label="メニューを開く" onclick="toggleDrawer()">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </button>
+</nav>
+
+<!-- ===== DRAWER OVERLAY ===== -->
+<div id="drawer-overlay" onclick="closeDrawer()"></div>
+
+<!-- ===== DRAWER MENU ===== -->
+<div id="drawer">
+  <nav class="drawer-nav">
+    <a data-page="home"  onclick="navigateTo('home')">
+      <span class="nav-icon">🏠</span> HOME
+    </a>
+    <a data-page="matome" onclick="navigateTo('matome')">
+      <span class="nav-icon">📋</span> まとめ
+    </a>
+    <a data-page="article" onclick="navigateTo('article')">
+      <span class="nav-icon">✍️</span> 記事
+    </a>
+    <a data-page="world" onclick="navigateTo('world')">
+      <span class="nav-icon">🌍</span> 世界情勢
+    </a>
+    <a data-page="other" onclick="navigateTo('other')">
+      <span class="nav-icon">📦</span> その他
+    </a>
+  </nav>
+  <div class="drawer-footer">REN:Lifestyle (仮) &copy; 2025</div>
+</div>
+
+<!-- ===== PAGES ===== -->
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="page-hero">
+    <div class="page-hero-bg" id="hero-home"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <span class="page-hero-label">REN:Lifestyle</span>
+      <h1 class="page-hero-title">あなたの毎日を、<br>もっと豊かに。</h1>
+      <p class="page-hero-sub">ライフスタイル・世界情勢・まとめをお届けするメディア</p>
+    </div>
+  </div>
+  <div class="home-welcome">
+    <h2>Welcome to <span>REN:Lifestyle</span></h2>
+    <p>日々の生活に役立つ情報、世界の最新情勢、厳選まとめをお届けします。<br>カテゴリを選んで、あなたの興味ある記事を読んでみてください。</p>
+    <div class="home-cards">
+      <div class="home-card" onclick="navigateTo('matome')">
+        <div class="home-card-icon">📋</div>
+        <div class="home-card-name">まとめ</div>
+        <div class="home-card-desc">厳選情報をまとめて解説</div>
+      </div>
+      <div class="home-card" onclick="navigateTo('article')">
+        <div class="home-card-icon">✍️</div>
+        <div class="home-card-name">記事</div>
+        <div class="home-card-desc">オリジナル記事・コラム</div>
+      </div>
+      <div class="home-card" onclick="navigateTo('world')">
+        <div class="home-card-icon">🌍</div>
+        <div class="home-card-name">世界情勢</div>
+        <div class="home-card-desc">世界のニュースをわかりやすく</div>
+      </div>
+      <div class="home-card" onclick="navigateTo('other')">
+        <div class="home-card-icon">📦</div>
+        <div class="home-card-name">その他</div>
+        <div class="home-card-desc">ガジェット・レビューなど</div>
+      </div>
+    </div>
+  </div>
+  <div class="latest-section">
+    <div class="section-heading">最新記事</div>
+    <div id="home-latest-list" class="article-list">
+      <div class="loading"><div class="spinner"></div> 読み込み中...</div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">REN<span>:</span>Lifestyle</div>
+    <p>&copy; 2025 REN:Lifestyle (仮) - All rights reserved</p>
+  </footer>
+</div>
+
+<!-- まとめ -->
+<div id="page-matome" class="page">
+  <div class="page-hero">
+    <div class="page-hero-bg" id="hero-matome"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <span class="page-hero-label">まとめ</span>
+      <h1 class="page-hero-title">まとめ</h1>
+      <p class="page-hero-sub">厳選された情報をわかりやすくまとめてお届け</p>
+    </div>
+  </div>
+  <div class="articles-container">
+    <div class="section-heading">まとめ記事一覧</div>
+    <div id="matome-list" class="article-list">
+      <div class="loading"><div class="spinner"></div> 読み込み中...</div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">REN<span>:</span>Lifestyle</div>
+    <p>&copy; 2025 REN:Lifestyle (仮)</p>
+  </footer>
+</div>
+
+<!-- 記事 -->
+<div id="page-article" class="page">
+  <div class="page-hero">
+    <div class="page-hero-bg" id="hero-article"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <span class="page-hero-label">記事</span>
+      <h1 class="page-hero-title">記事</h1>
+      <p class="page-hero-sub">オリジナル記事・コラム・レポート</p>
+    </div>
+  </div>
+  <div class="articles-container">
+    <div class="section-heading">記事一覧</div>
+    <div id="article-list" class="article-list">
+      <div class="loading"><div class="spinner"></div> 読み込み中...</div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">REN<span>:</span>Lifestyle</div>
+    <p>&copy; 2025 REN:Lifestyle (仮)</p>
+  </footer>
+</div>
+
+<!-- 世界情勢 -->
+<div id="page-world" class="page">
+  <div class="page-hero">
+    <div class="page-hero-bg" id="hero-world"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <span class="page-hero-label">世界情勢</span>
+      <h1 class="page-hero-title">世界情勢</h1>
+      <p class="page-hero-sub">世界の最新ニュースをわかりやすく解説</p>
+    </div>
+  </div>
+  <div class="articles-container">
+    <div class="section-heading">世界情勢 記事一覧</div>
+    <div id="world-list" class="article-list">
+      <div class="loading"><div class="spinner"></div> 読み込み中...</div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">REN<span>:</span>Lifestyle</div>
+    <p>&copy; 2025 REN:Lifestyle (仮)</p>
+  </footer>
+</div>
+
+<!-- その他 -->
+<div id="page-other" class="page">
+  <div class="page-hero">
+    <div class="page-hero-bg" id="hero-other"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <span class="page-hero-label">その他</span>
+      <h1 class="page-hero-title">その他</h1>
+      <p class="page-hero-sub">ガジェット・レビュー・雑記など</p>
+    </div>
+  </div>
+  <div class="articles-container">
+    <div class="section-heading">その他 記事一覧</div>
+    <div id="other-list" class="article-list">
+      <div class="loading"><div class="spinner"></div> 読み込み中...</div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">REN<span>:</span>Lifestyle</div>
+    <p>&copy; 2025 REN:Lifestyle (仮)</p>
+  </footer>
+</div>
+
+<!-- ===== ARTICLE MODAL ===== -->
+<div id="article-modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeModal()" aria-label="閉じる">×</button>
+      <div class="modal-category" id="modal-cat"></div>
+      <h2 class="modal-title" id="modal-title"></h2>
+      <div class="modal-meta" id="modal-meta"></div>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-tags" id="modal-tags"></div>
+  </div>
+</div>
+
+<!-- ===== ADMIN MODAL ===== -->
+<div id="admin-modal">
+  <div class="admin-box">
+    <h2>⚙️ 記事管理パネル</h2>
+
+    <div class="form-group">
+      <label>カテゴリ *</label>
+      <select id="admin-cat">
+        <option value="matome">📋 まとめ</option>
+        <option value="article">✍️ 記事</option>
+        <option value="world">🌍 世界情勢</option>
+        <option value="other">📦 その他</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>タイトル *</label>
+      <input type="text" id="admin-title" placeholder="記事のタイトルを入力...">
+    </div>
+
+    <div class="form-group">
+      <label>概要（一覧表示用）</label>
+      <input type="text" id="admin-summary" placeholder="一覧に表示される短い説明文...">
+    </div>
+
+    <div class="form-group">
+      <label>本文（HTML可）</label>
+      <textarea id="admin-content" placeholder="記事本文を入力。HTMLタグも使用可能。例: &lt;h2&gt;見出し&lt;/h2&gt;&lt;p&gt;本文&lt;/p&gt;"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>タグ（カンマ区切り）</label>
+      <input type="text" id="admin-tags" placeholder="タグ1, タグ2, タグ3">
+    </div>
+
+    <div class="admin-actions">
+      <button class="btn btn-primary" onclick="addArticle()">✅ 記事を追加</button>
+      <button class="btn btn-secondary" onclick="exportJSON()">📥 JSON出力</button>
+      <button class="btn btn-danger" onclick="clearStorage()">🗑️ 保存データ削除</button>
+      <button class="btn btn-secondary" onclick="closeAdmin()">✕ 閉じる</button>
+    </div>
+
+    <div class="admin-note">
+      💡 <strong>記事の保存について</strong><br>
+      追加した記事はブラウザのLocalStorageに保存されます。<br>
+      「JSON出力」ボタンで articles.json の内容をコピーし、GitHubにプッシュすると全員に反映されます。<br>
+      ※ページ下部のURLバーに <code>#admin</code> を追加するとこのパネルを開けます。
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast"></div>
+
+<!-- ===== SCRIPT ===== -->
+<script>
+// ======================
+// 設定
+// ======================
+const IMAGES = {
+  home:    'images/5.png',
+  matome:  'images/3.png',
+  article: 'images/1.png',
+  world:   'images/2.png',
+  other:   'images/4.png'
+};
+
+const CAT_LABELS = {
+  matome:  { label: 'まとめ',   class: 'cat-matome'  },
+  article: { label: '記事',     class: 'cat-article' },
+  world:   { label: '世界情勢', class: 'cat-world'   },
+  other:   { label: 'その他',   class: 'cat-other'   }
+};
+
+const PAGES = ['home','matome','article','world','other'];
+const STORAGE_KEY = 'ren_lifestyle_articles';
+
+let allArticles = [];
+
+// ======================
+// 初期化
+// ======================
+document.addEventListener('DOMContentLoaded', () => {
+  setBackgrounds();
+  loadArticles();
+
+  // URLハッシュでページ切り替え
+  const hash = location.hash.replace('#','') || 'home';
+  if (hash === 'admin') { openAdmin(); navigateTo('home'); }
+  else { navigateTo(PAGES.includes(hash) ? hash : 'home'); }
+
+  window.addEventListener('hashchange', () => {
+    const h = location.hash.replace('#','');
+    if (h === 'admin') { openAdmin(); }
+    else if (PAGES.includes(h)) { navigateTo(h); }
+  });
+
+  // Escキーで閉じる
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); closeAdmin(); }
+  });
+});
+
+// ======================
+// 背景画像セット
+// ======================
+function setBackgrounds() {
+  Object.entries(IMAGES).forEach(([page, src]) => {
+    const el = document.getElementById('hero-' + page);
+    if (el) el.style.backgroundImage = `url('${src}')`;
+  });
+}
+
+// ======================
+// 記事ロード（JSON + LocalStorage）
+// ======================
+async function loadArticles() {
+  // JSON ファイルから取得
+  let jsonArticles = [];
+  try {
+    const res = await fetch('articles.json?v=' + Date.now());
+    const data = await res.json();
+    jsonArticles = data.articles || [];
+  } catch(e) {
+    console.warn('articles.json 読み込み失敗:', e);
+  }
+
+  // LocalStorage から取得
+  const lsRaw = localStorage.getItem(STORAGE_KEY);
+  const lsArticles = lsRaw ? JSON.parse(lsRaw) : [];
+
+  // マージ（LocalStorageが優先、IDが被る場合はLocalStorageで上書き）
+  const merged = [...jsonArticles];
+  lsArticles.forEach(la => {
+    const idx = merged.findIndex(a => a.id === la.id);
+    if (idx >= 0) merged[idx] = la;
+    else merged.unshift(la);
+  });
+
+  // 日付降順ソート
+  allArticles = merged.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  renderAllLists();
+}
+
+// ======================
+// 全リスト描画
+// ======================
+function renderAllLists() {
+  const latest = allArticles.slice(0, 6);
+  renderList('home-latest-list', latest);
+  renderList('matome-list',  allArticles.filter(a => a.category === 'matome'));
+  renderList('article-list', allArticles.filter(a => a.category === 'article'));
+  renderList('world-list',   allArticles.filter(a => a.category === 'world'));
+  renderList('other-list',   allArticles.filter(a => a.category === 'other'));
+}
+
+// ======================
+// リスト描画
+// ======================
+function renderList(containerId, articles) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  if (articles.length === 0) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <p>まだ記事がありません。<br>管理パネルから追加してください。</p>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = articles.map((a, i) => {
+    const cat = CAT_LABELS[a.category] || { label: a.category, class: 'cat-other' };
+    const tags = (a.tags || []).map(t => `<span class="article-tag">#${t}</span>`).join('');
+    return `
+      <div class="article-card" onclick="openArticle('${a.id}')" role="button" tabindex="0">
+        <div class="article-card-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="article-card-body">
+          <span class="article-card-category ${cat.class}">${cat.label}</span>
+          <div class="article-card-title">${escapeHTML(a.title)}</div>
+          <div class="article-card-summary">${escapeHTML(a.summary || '')}</div>
+          <div class="article-card-meta">
+            <span>📅 ${a.date || ''}</span>
+          </div>
+          <div class="article-tags">${tags}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Enterキーでも開けるように
+  el.querySelectorAll('.article-card').forEach(card => {
+    card.addEventListener('keydown', e => { if (e.key === 'Enter') card.click(); });
+  });
+}
+
+// ======================
+// 記事モーダル
+// ======================
+function openArticle(id) {
+  const a = allArticles.find(x => x.id === id);
+  if (!a) return;
+
+  const cat = CAT_LABELS[a.category] || { label: a.category, class: 'cat-other' };
+
+  document.getElementById('modal-cat').innerHTML =
+    `<span class="article-card-category ${cat.class}">${cat.label}</span>`;
+  document.getElementById('modal-title').textContent = a.title;
+  document.getElementById('modal-meta').innerHTML =
+    `<span>📅 ${a.date || ''}</span>`;
+  document.getElementById('modal-body').innerHTML = a.content || '<p>本文なし</p>';
+  document.getElementById('modal-tags').innerHTML =
+    (a.tags || []).map(t => `<span class="article-tag">#${t}</span>`).join('');
+
+  const modal = document.getElementById('article-modal');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  modal.scrollTop = 0;
+}
+
+function closeModal() {
+  document.getElementById('article-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('article-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('article-modal')) closeModal();
+});
+
+// ======================
+// ナビゲーション
+// ======================
+function navigateTo(page) {
+  if (!PAGES.includes(page)) page = 'home';
+
+  // ページ切替
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.add('active');
+
+  // ドロワーのactive
+  document.querySelectorAll('.drawer-nav a').forEach(a => {
+    a.classList.toggle('active', a.dataset.page === page);
+  });
+
+  // ハッシュ更新
+  history.replaceState(null, '', '#' + page);
+
+  closeDrawer();
+  window.scrollTo({ top: 0 });
+}
+
+// ======================
+// ドロワー
+// ======================
+function toggleDrawer() {
+  const btn = document.getElementById('menu-btn');
+  const drawer = document.getElementById('drawer');
+  const overlay = document.getElementById('drawer-overlay');
+  const isOpen = drawer.classList.contains('open');
+  if (isOpen) { closeDrawer(); } else {
+    btn.classList.add('open');
+    drawer.classList.add('open');
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeDrawer() {
+  document.getElementById('menu-btn').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// ======================
+// 管理パネル
+// ======================
+function openAdmin() {
+  document.getElementById('admin-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAdmin() {
+  document.getElementById('admin-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function addArticle() {
+  const title   = document.getElementById('admin-title').value.trim();
+  const cat     = document.getElementById('admin-cat').value;
+  const summary = document.getElementById('admin-summary').value.trim();
+  const content = document.getElementById('admin-content').value.trim();
+  const tagsRaw = document.getElementById('admin-tags').value.trim();
+
+  if (!title) { showToast('⚠️ タイトルを入力してください'); return; }
+  if (!content) { showToast('⚠️ 本文を入力してください'); return; }
+
+  const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+  const now  = new Date().toISOString().split('T')[0];
+  const id   = 'art-' + Date.now();
+
+  const newArticle = { id, category: cat, title, summary, content, date: now, tags };
+
+  // LocalStorageに追記
+  const lsRaw = localStorage.getItem(STORAGE_KEY);
+  const ls = lsRaw ? JSON.parse(lsRaw) : [];
+  ls.unshift(newArticle);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ls));
+
+  // 表示更新
+  allArticles.unshift(newArticle);
+  renderAllLists();
+
+  // フォームリセット
+  ['admin-title','admin-summary','admin-content','admin-tags'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+
+  showToast('✅ 記事を追加しました！');
+  closeAdmin();
+}
+
+function exportJSON() {
+  const lsRaw = localStorage.getItem(STORAGE_KEY);
+  const ls = lsRaw ? JSON.parse(lsRaw) : [];
+
+  // articles.json 形式にマージしてエクスポート
+  const exportData = { articles: allArticles };
+  const json = JSON.stringify(exportData, null, 2);
+
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'articles.json';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  showToast('📥 articles.json をダウンロードしました');
+}
+
+function clearStorage() {
+  if (!confirm('ブラウザに保存された記事データを削除しますか？\n（articles.jsonのデータは残ります）')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  loadArticles();
+  showToast('🗑️ ローカルデータを削除しました');
+}
+
+// ======================
+// Toast通知
+// ======================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ======================
+// HTMLエスケープ
+// ======================
+function escapeHTML(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
